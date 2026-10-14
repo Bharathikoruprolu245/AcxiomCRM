@@ -1,0 +1,16 @@
+@model AcxiomCRM.Models.Opportunity
+@{var editing=ViewContext.RouteData.Values["action"]?.ToString()=="Edit";ViewData["Title"]=editing?"Edit Opportunity":"Create Opportunity";}
+<h2>@ViewData["Title"]</h2><form asp-action="@(editing?"Edit":"Create")" asp-route-id="@Model.OpportunityId" method="post"><div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="row">
+<div class="col-md-6 mb-3"><label asp-for="OpportunityName" class="form-label"></label><input asp-for="OpportunityName" class="form-control"/><span asp-validation-for="OpportunityName" class="text-danger"></span></div>
+<div class="col-md-6 mb-3"><label asp-for="CustomerId" class="form-label">Customer</label><select asp-for="CustomerId" class="form-select"><option value="">Choose customer</option>@foreach(var c in (IEnumerable<AcxiomCRM.Models.Customer>)ViewBag.Customers){<option value="@c.CustomerId">@c.CustomerName (@c.CustomerCode)</option>}</select><span asp-validation-for="CustomerId" class="text-danger"></span></div>
+<div class="col-md-6 mb-3"><label asp-for="LeadId" class="form-label">Related lead (optional)</label><input asp-for="LeadId" class="form-control" type="number" min="1"/></div>
+<div class="col-md-6 mb-3"><label asp-for="Amount" class="form-label"></label><input asp-for="Amount" class="form-control" type="number" min=".01" step=".01"/><span asp-validation-for="Amount" class="text-danger"></span></div>
+<div class="col-md-4 mb-3"><label asp-for="Probability" class="form-label"></label><input asp-for="Probability" class="form-control" type="number" min="0" max="100"/><span asp-validation-for="Probability" class="text-danger"></span></div>
+<div class="col-md-4 mb-3"><label asp-for="Stage" class="form-label"></label><select asp-for="Stage" class="form-select">@foreach(string s in ViewBag.Stages){<option value="@s">@s</option>}</select></div>
+<div class="col-md-4 mb-3"><label asp-for="Status" class="form-label"></label><select asp-for="Status" class="form-select"><option>Open</option><option>Won</option><option>Lost</option></select></div>
+<div class="col-md-6 mb-3"><label asp-for="ExpectedCloseDate" class="form-label"></label><input asp-for="ExpectedCloseDate" class="form-control" type="date" value="@Model.ExpectedCloseDate.ToString("yyyy-MM-dd")" min="@DateTime.Today.ToString("yyyy-MM-dd")"/><span asp-validation-for="ExpectedCloseDate" class="text-danger"></span></div>
+<div class="col-md-6 mb-3"><label asp-for="AssignedTo" class="form-label">Assigned sales executive (email)</label><input asp-for="AssignedTo" class="form-control" readonly="@User.IsInRole(AcxiomCRM.Models.Roles.SalesExecutive)"/></div>
+<div class="col-12 mb-3"><label asp-for="Notes" class="form-label"></label><textarea asp-for="Notes" class="form-control"></textarea></div>
+</div><button class="btn btn-primary">Save</button> <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a></form>
+@section Scripts{<partial name="_ValidationScriptsPartial"/>}

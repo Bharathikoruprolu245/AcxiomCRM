@@ -1,0 +1,15 @@
+@model AcxiomCRM.Models.Activity
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{var editing=ViewContext.RouteData.Values["action"]?.ToString()=="Edit";ViewData["Title"]=editing?"Edit Activity":"Create Activity";}
+<h2>@ViewData["Title"]</h2><form asp-action="@(editing?"Edit":"Create")" asp-route-id="@Model.ActivityId" method="post"><div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="row">
+<div class="col-md-6 mb-3"><label asp-for="ActivityType" class="form-label"></label><select asp-for="ActivityType" class="form-select">@foreach(string s in AcxiomCRM.Models.ActivityTypes.All){<option value="@s">@s</option>}</select></div>
+<div class="col-md-6 mb-3"><label asp-for="Subject" class="form-label"></label><input asp-for="Subject" class="form-control"/><span asp-validation-for="Subject" class="text-danger"></span></div>
+<div class="col-md-6 mb-3"><label asp-for="ActivityDate" class="form-label"></label><input asp-for="ActivityDate" type="date" class="form-control" value="@Model.ActivityDate.ToString("yyyy-MM-dd")"/><span asp-validation-for="ActivityDate" class="text-danger"></span></div>
+<div class="col-md-6 mb-3"><label asp-for="Status" class="form-label"></label><select asp-for="Status" class="form-select"><option>Planned</option><option>Completed</option><option>Cancelled</option></select></div>
+<div class="col-md-6 mb-3"><label asp-for="CustomerId" class="form-label">Customer (optional)</label><select asp-for="CustomerId" class="form-select" asp-items="@(new SelectList((IEnumerable<AcxiomCRM.Models.Customer>)ViewBag.Customers,"CustomerId","CustomerName",Model.CustomerId))"><option value="">— none —</option></select></div>
+<div class="col-md-6 mb-3"><label asp-for="LeadId" class="form-label">Lead (optional)</label><select asp-for="LeadId" class="form-select" asp-items="@(new SelectList((IEnumerable<AcxiomCRM.Models.Lead>)ViewBag.Leads,"LeadId","LeadName",Model.LeadId))"><option value="">— none —</option></select></div>
+<div class="col-md-6 mb-3"><label asp-for="AssignedTo" class="form-label">Assigned to (email)</label><input asp-for="AssignedTo" class="form-control" readonly="@User.IsInRole(AcxiomCRM.Models.Roles.SalesExecutive)"/></div>
+<div class="col-12 mb-3"><label asp-for="Description" class="form-label"></label><textarea asp-for="Description" class="form-control"></textarea></div>
+</div><button class="btn btn-primary">Save</button> <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a></form>
+@section Scripts{<partial name="_ValidationScriptsPartial"/>}

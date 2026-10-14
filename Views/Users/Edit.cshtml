@@ -1,0 +1,10 @@
+@model AcxiomCRM.Controllers.UsersController.UserEditModel
+@{var editing=!string.IsNullOrEmpty(Model.Id);ViewData["Title"]=editing?"Edit User":"Create User";}
+<h2>@ViewData["Title"]</h2><form asp-action="@(editing?"Edit":"Create")" asp-route-id="@Model.Id" method="post"><div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="mb-3"><label asp-for="FullName" class="form-label"></label><input asp-for="FullName" class="form-control"/><span asp-validation-for="FullName" class="text-danger"></span></div>
+<div class="mb-3"><label asp-for="Email" class="form-label"></label><input asp-for="Email" class="form-control" readonly="@editing"/><span asp-validation-for="Email" class="text-danger"></span></div>
+<div class="mb-3"><label asp-for="Role" class="form-label"></label><select asp-for="Role" class="form-select"><option value="Admin">Admin</option><option value="Manager">Manager</option><option value="SalesExecutive">Sales Executive</option></select><span asp-validation-for="Role" class="text-danger"></span></div>
+<div class="mb-3"><label asp-for="Password" class="form-label">@(editing?"New password (optional)":"Temporary password")</label><input asp-for="Password" class="form-control" autocomplete="new-password" required="@(!editing)"/><span asp-validation-for="Password" class="text-danger"></span><div class="form-text">At least 8 characters, with upper/lowercase, digit and special character.</div></div>
+<div class="form-check mb-3"><input asp-for="IsActive" class="form-check-input"/><label asp-for="IsActive" class="form-check-label">Account active</label></div>
+<button class="btn btn-primary">Save</button> <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a></form>
+@section Scripts{<partial name="_ValidationScriptsPartial"/>}

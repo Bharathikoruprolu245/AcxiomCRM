@@ -1,0 +1,29 @@
+@using System.Text.Json
+@{ViewData["Title"]="Dashboard";}
+<div class="d-flex justify-content-between align-items-center mb-4"><div><h2>Dashboard</h2><p class="text-muted mb-0">Welcome, @User.Identity?.Name. Your view is scoped to your authorized records.</p></div><span class="badge text-bg-dark">@((User.IsInRole("Admin")?"Admin":User.IsInRole("Manager")?"Manager":"Sales Executive"))</span></div>
+<div class="row g-3 mb-4">
+<div class="col-6 col-md-3"><div class="card h-100 shadow-sm"><div class="card-body"><div class="text-muted small">Total Customers</div><div class="display-6 fw-semibold">@ViewBag.TotalCustomers</div></div></div></div>
+<div class="col-6 col-md-3"><div class="card h-100 shadow-sm"><div class="card-body"><div class="text-muted small">Total Leads</div><div class="display-6 fw-semibold">@ViewBag.TotalLeads</div></div></div></div>
+<div class="col-6 col-md-3"><div class="card h-100 shadow-sm"><div class="card-body"><div class="text-muted small">Open Leads</div><div class="display-6 fw-semibold">@ViewBag.OpenLeads</div></div></div></div>
+<div class="col-6 col-md-3"><div class="card h-100 shadow-sm"><div class="card-body"><div class="text-muted small">Total Opportunities</div><div class="display-6 fw-semibold">@ViewBag.TotalOpportunities</div></div></div></div>
+<div class="col-6 col-md-3"><div class="card h-100 shadow-sm"><div class="card-body"><div class="text-muted small">Open Opportunities</div><div class="display-6 fw-semibold">@ViewBag.OpenOpportunities</div></div></div></div>
+<div class="col-6 col-md-3"><div class="card h-100 shadow-sm"><div class="card-body"><div class="text-muted small">Won Opportunities</div><div class="display-6 fw-semibold">@ViewBag.WonOpportunities</div></div></div></div>
+<div class="col-6 col-md-3"><div class="card h-100 shadow-sm"><div class="card-body"><div class="text-muted small">Lost Opportunities</div><div class="display-6 fw-semibold">@ViewBag.LostOpportunities</div></div></div></div>
+<div class="col-6 col-md-3"><div class="card h-100 shadow-sm"><div class="card-body"><div class="text-muted small">Total Pipeline Value</div><div class="h3 fw-semibold">@(((decimal)ViewBag.Pipeline).ToString("C"))</div><div class="small text-muted">Open opportunities</div></div></div></div>
+</div>
+<div class="row g-4"><div class="col-lg-6"><div class="card h-100"><div class="card-body"><h5>Lead Status</h5><canvas id="leadChart" height="220"></canvas></div></div></div><div class="col-lg-6"><div class="card h-100"><div class="card-body"><h5>Opportunity Pipeline</h5><canvas id="oppChart" height="220"></canvas></div></div></div><div class="col-12"><div class="card"><div class="card-body"><h5>Monthly Sales (Won Opportunities)</h5><canvas id="salesChart" height="100"></canvas></div></div></div></div>
+<div class="card mt-4"><div class="card-body"><h5>Upcoming Follow-Ups <span class="badge text-bg-secondary">@ViewBag.PendingFollowUps pending</span></h5><div class="table-responsive"><table class="table table-sm"><thead><tr><th>Date</th><th>Subject</th><th>Status</th><th>Assigned To</th></tr></thead><tbody>@foreach(var f in (IEnumerable<AcxiomCRM.Models.FollowUp>)ViewBag.Upcoming){<tr><td>@f.FollowUpDate.ToString("yyyy-MM-dd")</td><td>@f.Subject</td><td>@f.Status</td><td>@f.AssignedTo</td></tr>}</tbody></table></div><a asp-controller="FollowUps" asp-action="Index">View all follow-ups</a></div></div>
+@section Scripts{
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const leadLabels=@Html.Raw(JsonSerializer.Serialize((string[])ViewBag.LeadLabels));
+const leadValues=@Html.Raw(JsonSerializer.Serialize((int[])ViewBag.LeadValues));
+const stageLabels=@Html.Raw(JsonSerializer.Serialize((string[])ViewBag.StageLabels));
+const stageValues=@Html.Raw(JsonSerializer.Serialize((int[])ViewBag.StageValues));
+const monthLabels=@Html.Raw(JsonSerializer.Serialize((string[])ViewBag.MonthLabels));
+const monthValues=@Html.Raw(JsonSerializer.Serialize((decimal[])ViewBag.MonthValues));
+new Chart(document.getElementById('leadChart'),{type:'doughnut',data:{labels:leadLabels,datasets:[{data:leadValues}]},options:{responsive:true}});
+new Chart(document.getElementById('oppChart'),{type:'bar',data:{labels:stageLabels,datasets:[{label:'Opportunities',data:stageValues}]},options:{responsive:true,scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+new Chart(document.getElementById('salesChart'),{type:'line',data:{labels:monthLabels,datasets:[{label:'Won sales',data:monthValues,tension:.25,fill:false}]},options:{responsive:true,scales:{y:{beginAtZero:true}}}});
+</script>
+}
